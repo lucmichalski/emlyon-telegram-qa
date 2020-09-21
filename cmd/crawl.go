@@ -11,8 +11,8 @@ import (
 	"github.com/spf13/cobra"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	// "github.com/araddon/dateparse"
 
+	"github.com/lucmichalski/emlyon-telegram-qa/pkg/articletext"
 	"github.com/lucmichalski/emlyon-telegram-qa/pkg/models"
 )
 
@@ -81,7 +81,7 @@ var CrawlCmd = &cobra.Command{
 		c.OnHTML("html", func(e *colly.HTMLElement) {
 			rawHTML, err := e.DOM.Html()
 			if err != nil {
-				log.Warnf("error while getting DOM for url='%s'\n", e.Request.Ctx.Get("url"))
+				log.Fatalf("error while getting DOM for url='%s'\n", e.Request.Ctx.Get("url"))
 				return
 			}
 
@@ -96,8 +96,14 @@ var CrawlCmd = &cobra.Command{
 			pp.Println("FinalURL", article.FinalURL)
 			pp.Println("TopImage", article.TopImage)
 			pp.Println("PublishDate", article.PublishDate)
-			pp.Println("AdditionalData", article.AdditionalData)
-			pp.Println("Tags", article.Tags)
+
+			// nb. use article Text to extract page content as goose cleaner is working too efficiently sometimes ^^/
+			articleText, err := articletext.GetArticleText(strings.NewReader(rawHTML))
+			if err != nil {
+				log.Fatalf("error while getting article text for url='%s'\n", e.Request.Ctx.Get("url"))
+				return
+			}
+			pp.Println("Text", articleText)
 
 		})
 
