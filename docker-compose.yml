@@ -1,0 +1,55 @@
+---
+version: '3.8'
+services:
+
+  bot: &emlyon_base
+    image: lucmichalski/emlyon-telegram-bot:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+    - db-data:/opt/data    
+
+  crawler:
+    <<: *emlyon_base
+    command: ["emlyon-telegram-qa", "crawl"]
+
+  telegram:
+    <<: *emlyon_base
+    command: ["emlyon-telegram-qa", "chatbot"]
+
+  train:
+    <<: *emlyon_base
+    depends_on:
+    - elastic
+    command: ["python3", "scripts/train.py"]
+
+  elastic:
+    image: elasticsearch:7.6.2
+    container_name: ${NAMESPACE}-elastic
+    networks:
+    - internal
+    environment:
+    - discovery.type=single-node
+    volumes:
+    - es-data:/usr/share/elasticsearch/data
+    ulimits:
+      nproc: 65535
+      nofile:
+         soft: 65535
+         hard: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    restart: unless-stopped
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  db-data:
+  es-data:
+
+
+
