@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/advancedlogic/GoOse"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	"github.com/k0kubun/pp"
 	"github.com/spf13/cobra"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	// "github.com/araddon/dateparse"
 
 	"github.com/lucmichalski/emlyon-telegram-qa/pkg/models"
 )
@@ -25,7 +28,7 @@ var (
 	languages []string
 
 	parallelJobs   int
-	validLanguages = []string{"en", "fr", "cn"}
+	validLanguages = []string{"en", "fr"}
 	validDomains   = []string{"www.em-lyon.com", "em-lyon.com"}
 )
 
@@ -71,11 +74,36 @@ var CrawlCmd = &cobra.Command{
 
 		// Create a callback on the XPath query searching for the URLs
 		c.OnXML("//urlset/url/loc", func(e *colly.XMLElement) {
+			log.Infof("Enqueuing url '%s'", e.Text)
+			q.AddURL(e.Text)
+		})
+
+		c.OnHTML("html", func(e *colly.HTMLElement) {
+			rawHTML, err := e.DOM.Html()
+			if err != nil {
+				log.Warnf("error while getting DOM for url='%s'\n", e.Request.Ctx.Get("url"))
+				return
+			}
+
+			g := goose.New()
+			article, _ := g.ExtractFromRawHTML(rawHTML, e.Request.Ctx.Get("url"))
+			pp.Println("Title", article.Title)
+			pp.Println("MetaDescription", article.MetaDescription)
+			pp.Println("MetaKeywords", article.MetaKeywords)
+			pp.Println("MetaLang", article.MetaLang)
+			pp.Println("CanonicalLink", article.CanonicalLink)
+			pp.Println("CleanedText", article.CleanedText)
+			pp.Println("FinalURL", article.FinalURL)
+			pp.Println("TopImage", article.TopImage)
+			pp.Println("PublishDate", article.PublishDate)
+			pp.Println("AdditionalData", article.AdditionalData)
+			pp.Println("Tags", article.Tags)
 
 		})
 
 		c.OnRequest(func(r *colly.Request) {
 			fmt.Println("visiting", r.URL)
+			r.Ctx.Put("url", r.URL.String())
 		})
 
 		// enqueue sitemap url URL
