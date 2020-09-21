@@ -1,16 +1,20 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 
+	"github.com/abadojack/whatlanggo"
 	"github.com/advancedlogic/GoOse"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 	"github.com/k0kubun/pp"
 	"github.com/spf13/cobra"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+	// "gorm.io/driver/sqlite"
+	// "gorm.io/gorm"
 
 	"github.com/lucmichalski/emlyon-telegram-qa/pkg/articletext"
 	"github.com/lucmichalski/emlyon-telegram-qa/pkg/models"
@@ -24,6 +28,8 @@ var (
 	cacheReset    bool
 	cacheDisabled bool
 	cacheDir      string
+
+	dataDir string
 
 	languages []string
 
@@ -41,15 +47,15 @@ var CrawlCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// open the database
-		var err error
-		db, err = gorm.Open(sqlite.Open(fmt.Sprintf("%s.db", options.dbName)), &gorm.Config{})
-		if err != nil {
-			panic("failed to connect database")
-		}
+		// var err error
+		// db, err = gorm.Open(sqlite.Open(fmt.Sprintf("%s.db", options.dbName)), &gorm.Config{})
+		// if err != nil {
+		// 	panic("failed to connect database")
+		// }
 
-		// Migrate the schema
-		db.AutoMigrate(&models.Page{})
-		db.AutoMigrate(&models.Document{})
+		// // Migrate the schema
+		// db.AutoMigrate(&models.Page{})
+		// db.AutoMigrate(&models.Document{})
 
 		// if cacheReset {
 		// 	os.Remove(cacheDir)
@@ -78,32 +84,77 @@ var CrawlCmd = &cobra.Command{
 			q.AddURL(e.Text)
 		})
 
+		// Set error handler
+		c.OnError(func(r *colly.Response, err error) {
+			fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+		})
+
 		c.OnHTML("html", func(e *colly.HTMLElement) {
 			rawHTML, err := e.DOM.Html()
 			if err != nil {
 				log.Fatalf("error while getting DOM for url='%s'\n", e.Request.Ctx.Get("url"))
-				return
 			}
 
 			g := goose.New()
 			article, _ := g.ExtractFromRawHTML(rawHTML, e.Request.Ctx.Get("url"))
-			pp.Println("Title", article.Title)
-			pp.Println("MetaDescription", article.MetaDescription)
-			pp.Println("MetaKeywords", article.MetaKeywords)
-			pp.Println("MetaLang", article.MetaLang)
-			pp.Println("CanonicalLink", article.CanonicalLink)
-			pp.Println("CleanedText", article.CleanedText)
-			pp.Println("FinalURL", article.FinalURL)
-			pp.Println("TopImage", article.TopImage)
-			pp.Println("PublishDate", article.PublishDate)
+			if options.debug {
+				pp.Println("MetaKeywords", article.MetaKeywords)
+				pp.Println("MetaLang", article.MetaLang)
+				pp.Println("CanonicalLink", article.CanonicalLink)
+				pp.Println("CleanedText", article.CleanedText)
+				pp.Println("FinalURL", article.FinalURL)
+				pp.Println("TopImage", article.TopImage)
+				pp.Println("PublishDate", article.PublishDate)
+			}
 
 			// nb. use article Text to extract page content as goose cleaner is working too efficiently sometimes ^^/
 			articleText, err := articletext.GetArticleText(strings.NewReader(rawHTML))
 			if err != nil {
 				log.Fatalf("error while getting article text for url='%s'\n", e.Request.Ctx.Get("url"))
-				return
 			}
-			pp.Println("Text", articleText)
+			if options.debug {
+				pp.Println("Text", articleText)
+			}
+
+			info := whatlanggo.Detect(articleText)
+			if options.debug {
+				pp.Println("======> Language:", info.Lang.String(), " Script:", whatlanggo.Scripts[info.Script], " Confidence: ", info.Confidence)
+			}
+
+			linkHash := getMD5Hash(article.FinalURL)
+
+			entry := &models.Page{
+				LinkHash:           linkHash,
+				Title:              article.Title,
+				Body:               articleText,
+				MetaDescription:    article.MetaDescription,
+				MetaKeywords:       article.MetaKeywords,
+				MetaLang:           article.MetaLang,
+				CanonicalLink:      article.CanonicalLink,
+				CleanedText:        article.CleanedText,
+				FinalURL:           article.FinalURL,
+				TopImage:           article.TopImage,
+				Language:           info.Lang.String(),
+				LanguageConfidence: info.Confidence,
+			}
+
+			if article.PublishDate != nil {
+				entry.PublishDate = *article.PublishDate
+			}
+
+			jsonStr, err := json.Marshal(&entry)
+			if err != nil {
+				log.Fatalln("error while marshalling, msg=", err)
+			}
+
+			jsonFile := fmt.Sprintf("%s/%s.json", dataDir, linkHash)
+			if options.debug {
+				pp.Println("jsonFile:", jsonFile)
+			}
+
+			if err := ioutil.WriteFile(jsonFile, jsonStr, os.ModePerm); err != nil {
+				log.Fatal(err)
+			}
 
 		})
 
@@ -116,6 +167,7 @@ var CrawlCmd = &cobra.Command{
 		for _, language := range languages {
 			q.AddURL(fmt.Sprintf(sitemapPattern, language))
 		}
+
 		// Consume URLs
 		q.Run(c)
 
@@ -124,7 +176,8 @@ var CrawlCmd = &cobra.Command{
 
 func init() {
 	CrawlCmd.Flags().StringSliceVarP(&languages, "languages", "l", []string{"en"}, fmt.Sprintf("Language to crawl (valid: %s)", strings.Join(validLanguages, ",")))
-	CrawlCmd.Flags().StringVarP(&cacheDir, "cache-dir", "", "./shared/data/emlyon", "Cache output path.")
+	CrawlCmd.Flags().StringVarP(&dataDir, "data-dir", "", "./shared/data/emlyon", "Data directory.")
+	CrawlCmd.Flags().StringVarP(&cacheDir, "cache-dir", "", "./shared/cache/emlyon", "Cache output path.")
 	CrawlCmd.Flags().BoolVarP(&cacheReset, "cache-reset", "", false, "Reset http cache")
 	CrawlCmd.Flags().BoolVarP(&cacheDisabled, "no-cache", "", false, "Disable http cache")
 	CrawlCmd.Flags().IntVarP(&parallelJobs, "jobs", "j", 4, "Parallel jobs")

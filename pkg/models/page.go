@@ -2,17 +2,27 @@ package models
 
 import (
 	"fmt"
+	"time"
 
-	"gorm.io/gorm"
 	"github.com/abadojack/whatlanggo"
+	"gorm.io/gorm"
 )
 
 type Page struct {
-   gorm.Model
-   Title string
-   Body string 
-   Language string
-LanguageConfidence float64
+	gorm.Model
+	LinkHash           string    `json:"hash,omitempty"`
+	Title              string    `json:"title,omitempty"`
+	Body               string    `json:"body,omitempty"`
+	MetaDescription    string    `json:"description,omitempty"`
+	MetaKeywords       string    `json:"keywords,omitempty"`
+	MetaLang           string    `json:"lang,omitempty"`
+	CanonicalLink      string    `json:"canonical-link,omitempty"`
+	CleanedText        string    `json:"cleaned-text,omitempty"`
+	FinalURL           string    `json:"url,omitempty"`
+	TopImage           string    `json:"image,omitempty"`
+	PublishDate        time.Time `json:"publish-date,omitempty"`
+	Language           string    `json:"detected-lang,omitempty"`
+	LanguageConfidence float64   `json:"-"`
 }
 
 func (p *Page) BeforeCreate() (err error) {
@@ -23,11 +33,5 @@ func (p *Page) BeforeCreate() (err error) {
 		p.LanguageConfidence = info.Confidence
 		fmt.Println("======> Language:", p.Language, " Script:", whatlanggo.Scripts[info.Script], " Confidence: ", p.LanguageConfidence)
 	}
-	return
-}
-
-func (p *Page) AfterCreate() (err error) {
-	// add to manticore
-	// add to bleve
 	return
 }

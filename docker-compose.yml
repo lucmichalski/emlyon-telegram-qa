@@ -8,21 +8,31 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-    - db-data:/opt/data    
+    - db-data:/opt/em-lyon/store 
 
   crawler:
     <<: *emlyon_base
-    command: ["emlyon-telegram-qa", "crawl"]
+    volumes:
+    - em-data:/opt/em-lyon/data
+    - em-cache:/opt/em-lyon/cache
+    command: ["emlyon-telegram-qa", "crawl", "--data-dir", "/opt/em-lyon/data", "--cache-dir", "/opt/em-lyon/cache"]
 
   telegram:
     <<: *emlyon_base
     command: ["emlyon-telegram-qa", "chatbot"]
 
   train:
-    <<: *emlyon_base
+    build:
+      context: .docker/haystack-train
+      dockerfile: Dockerfile
+    networks:
+    - internal
+    volumes:
+    - em-data:/opt/em-lyon/data
     depends_on:
     - elastic
-    command: ["python3", "scripts/train.py"]
+    - tika
+    command: ["python3", "train.py"]
 
   elastic:
     image: elasticsearch:7.6.2
@@ -46,10 +56,13 @@ services:
   tika:
     image: lucmichalski/apachae-tika:alpine3.12-1.24.1
     container_name: ${NAMESPACE}-tika
+    build:
+      context: .docker/alpine-tika
+      dockerfile: Dockerfile
     networks:
     - internal
     volumes:
-    - tika-data:/opt/tika
+    - tika-data:/var/tika
     restart: unless-stopped
 
 networks:
@@ -57,6 +70,12 @@ networks:
     driver: bridge
 
 volumes:
+  em-data:
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/shared/data/emlyon
+  em-cache:
   db-data:
   es-data:
   tika-data:

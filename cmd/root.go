@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"os"
 
@@ -56,4 +58,9 @@ func init() {
 	flags.BoolVarP(&options.generateDoc, "generate-doc", "g", false, "generate documentation.")
 	flags.BoolVarP(&options.debug, "debug", "d", false, "debug mode.")
 	flags.BoolVarP(&options.verbose, "verbose", "v", false, "verbose output.")
+}
+
+func getMD5Hash(text string) string {
+	hash := md5.Sum([]byte(text))
+	return hex.EncodeToString(hash[:])
 }
