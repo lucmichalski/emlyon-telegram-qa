@@ -27,4 +27,4 @@ RUN apk add --no-cache ca-certificates
 
 COPY --from=builder /go/bin/emlyon-telegram-qa /usr/bin/emlyon-telegram-qa
 
-CMD ["emlyon-telegram-qa"]
+ENTRYPOINT ["emlyon-telegram-qa"]

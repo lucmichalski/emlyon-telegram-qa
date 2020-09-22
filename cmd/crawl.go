@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/abadojack/whatlanggo"
@@ -29,13 +30,14 @@ var (
 	cacheDisabled bool
 	cacheDir      string
 
-	dataDir string
+	dataReset bool
+	dataDir   string
 
 	languages []string
 
 	parallelJobs   int
 	validLanguages = []string{"en", "fr"}
-	validDomains   = []string{"www.em-lyon.com", "em-lyon.com"}
+	validDomains   = []string{"www.em-lyon.com", "em-lyon.com", "learninghub.em-lyon.com"}
 )
 
 // CrawlCmd allows to crawl the website
@@ -60,6 +62,18 @@ var CrawlCmd = &cobra.Command{
 		// if cacheReset {
 		// 	os.Remove(cacheDir)
 		// }
+
+		if dataReset {
+			dir, err := ioutil.ReadDir(dataDir)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, d := range dir {
+				if err := os.RemoveAll(path.Join([]string{dataDir, d.Name()}...)); err != nil {
+					log.Fatal(err)
+				}
+			}
+		}
 
 		// Set to empty the cache dir to disable it
 		if cacheDisabled {
@@ -87,6 +101,10 @@ var CrawlCmd = &cobra.Command{
 		// Set error handler
 		c.OnError(func(r *colly.Response, err error) {
 			fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+		})
+
+		c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+			q.AddURL(e.Attr("href"))
 		})
 
 		c.OnHTML("html", func(e *colly.HTMLElement) {
@@ -147,7 +165,16 @@ var CrawlCmd = &cobra.Command{
 				log.Fatalln("error while marshalling, msg=", err)
 			}
 
-			jsonFile := fmt.Sprintf("%s/%s.json", dataDir, linkHash)
+			if article.MetaLang == "" {
+				article.MetaLang = "unkown"
+			}
+
+			prefixDir := fmt.Sprintf("%s/%s", dataDir, article.MetaLang)
+			if err := ensureDir(prefixDir); err != nil {
+				log.Fatal(err)
+			}
+
+			jsonFile := fmt.Sprintf("%s/%s.json", prefixDir, linkHash)
 			if options.debug {
 				pp.Println("jsonFile:", jsonFile)
 			}
@@ -176,6 +203,7 @@ var CrawlCmd = &cobra.Command{
 
 func init() {
 	CrawlCmd.Flags().StringSliceVarP(&languages, "languages", "l", []string{"en"}, fmt.Sprintf("Language to crawl (valid: %s)", strings.Join(validLanguages, ",")))
+	CrawlCmd.Flags().BoolVarP(&dataReset, "data-reset", "", false, "Reset collected data (json files)")
 	CrawlCmd.Flags().StringVarP(&dataDir, "data-dir", "", "./shared/data/emlyon", "Data directory.")
 	CrawlCmd.Flags().StringVarP(&cacheDir, "cache-dir", "", "./shared/cache/emlyon", "Cache output path.")
 	CrawlCmd.Flags().BoolVarP(&cacheReset, "cache-reset", "", false, "Reset http cache")

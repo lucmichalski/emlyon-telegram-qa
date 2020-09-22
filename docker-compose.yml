@@ -15,11 +15,11 @@ services:
     volumes:
     - em-data:/opt/em-lyon/data
     - em-cache:/opt/em-lyon/cache
-    command: ["emlyon-telegram-qa", "crawl", "--data-dir", "/opt/em-lyon/data", "--cache-dir", "/opt/em-lyon/cache"]
+    command: ["crawl", "--data-dir", "/opt/em-lyon/data", "--cache-dir", "/opt/em-lyon/cache", "--data-reset"]
 
   telegram:
     <<: *emlyon_base
-    command: ["emlyon-telegram-qa", "chatbot"]
+    command: ["chatbot"]
 
   rest:
     image: lucmichalski/emlyon-qa-server:guicorn-latest
@@ -71,7 +71,7 @@ services:
     depends_on:
     - elastic
     - tika
-    command: ["python3", "train.py"]
+    command: ["python3", "train.py", "--index-reset", "--data-dir", "/opt/em-lyon/data/en"]
 
   elastic:
     image: elasticsearch:7.6.2

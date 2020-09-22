@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"syscall"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -63,4 +64,24 @@ func init() {
 func getMD5Hash(text string) string {
 	hash := md5.Sum([]byte(text))
 	return hex.EncodeToString(hash[:])
+}
+
+func ensureDir(dirname string) error {
+	log.Infof("ensureDir(%s)\n", dirname)
+	st, err := os.Stat(dirname)
+	if err != nil {
+		log.Infof("ensureDir creating %s\n", dirname)
+		err := os.MkdirAll(dirname, 0755)
+		if err != nil {
+			return err
+		}
+		st, _ = os.Stat(dirname)
+	}
+	var inode uint64 = 0
+	stat, ok := st.Sys().(*syscall.Stat_t)
+	if ok {
+		inode = stat.Ino
+	}
+	log.Infof("ensureDir(%s) DONE inode %d\n", dirname, inode)
+	return nil
 }
