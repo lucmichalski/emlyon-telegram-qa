@@ -2,7 +2,7 @@
 
 HOST = 'elastic'
 PORT = 9200
-INDEX_NAME = 'emlyon'
+INDEX_NAME = 'em-lyon'
 
 from haystack import Finder
 from haystack.preprocessor.cleaning import clean_wiki_text
@@ -26,10 +26,11 @@ import json
 from tqdm import tqdm
 
 emlyon_path = "/opt/em-lyon/data"
-onlydirs = [f for f in listdir(emlyon_path) if not isfile(join(emlyon_path, f))]
+# onlydirs = [f for f in listdir(emlyon_path) if not isfile(join(emlyon_path, f))]
+onlydirs = [emlyon_path]
 
 dicts = []
-bulk_size = 5000
+bulk_size = 500
 
 pbar = tqdm(onlydirs)
 for directory in pbar:
@@ -59,7 +60,7 @@ for directory in pbar:
                         "meta-description": json_formatted_article["description"],
                         "meta-keywords": json_formatted_article["keywords"],
                         "meta-lang": json_formatted_article["lang"],
-                        "language": json_formatted_article["language"]}
+                        "language": json_formatted_article["detected-lang"]}
 
 
             # Add document to bulk

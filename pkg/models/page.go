@@ -10,18 +10,18 @@ import (
 
 type Page struct {
 	gorm.Model
-	LinkHash           string    `json:"hash,omitempty"`
-	Title              string    `json:"title,omitempty"`
-	Body               string    `json:"body,omitempty"`
-	MetaDescription    string    `json:"description,omitempty"`
-	MetaKeywords       string    `json:"keywords,omitempty"`
-	MetaLang           string    `json:"lang,omitempty"`
-	CanonicalLink      string    `json:"canonical-link,omitempty"`
-	CleanedText        string    `json:"cleaned-text,omitempty"`
-	FinalURL           string    `json:"url,omitempty"`
-	TopImage           string    `json:"image,omitempty"`
-	PublishDate        time.Time `json:"publish-date,omitempty"`
-	Language           string    `json:"detected-lang,omitempty"`
+	LinkHash           string    `json:"hash"`
+	Title              string    `json:"title"`
+	Body               string    `json:"body"`
+	MetaDescription    string    `json:"description"`
+	MetaKeywords       string    `json:"keywords"`
+	MetaLang           string    `json:"lang"`
+	CanonicalLink      string    `json:"canonical-link"`
+	CleanedText        string    `json:"cleaned-text"`
+	FinalURL           string    `json:"url"`
+	TopImage           string    `json:"image"`
+	PublishDate        time.Time `json:"publish-date"`
+	Language           string    `json:"detected-lang"`
 	LanguageConfidence float64   `json:"-"`
 }
 

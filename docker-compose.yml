@@ -21,7 +21,46 @@ services:
     <<: *emlyon_base
     command: ["emlyon-telegram-qa", "chatbot"]
 
+  rest:
+    image: lucmichalski/emlyon-qa-server:guicorn-latest
+    container_name: ${NAMESPACE}-gunicorn
+    build:
+      context: .docker/haystack-rest
+      dockerfile: Dockerfile
+    environment:
+    - DB_HOST=elastic
+    - DB_INDEX=em-lyon
+    - PROJECT_NAME="EM Lyom - QA Telegram"
+    networks:
+    - internal
+    - web
+    ports:
+    - 8000:8000
+    depends_on:
+    - elastic
+    - tika
+    command: ["gunicorn", "application:app",  "-b", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "--workers", "2", "--timeout", "180"]    
+
+  server:
+    container_name: ${NAMESPACE}-flask
+    image: lucmichalski/emlyon-qa-server:flask-latest
+    build:
+      context: .docker/haystack-flask
+      dockerfile: Dockerfile
+    networks:
+    - internal
+    - web
+    volumes:
+    - ./shared/logs:/opt/logs
+    ports:
+    - 8001:8001
+    depends_on:
+    - elastic
+    - tika
+    command: ["--port", "8001", "--host", "0.0.0.0"]
+
   train:
+    container_name: ${NAMESPACE}-train
     build:
       context: .docker/haystack-train
       dockerfile: Dockerfile
@@ -68,6 +107,8 @@ services:
 networks:
   internal:
     driver: bridge
+  web:
+    external: true
 
 volumes:
   em-data:
