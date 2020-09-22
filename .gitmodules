@@ -1,3 +1,12 @@
 [submodule ".docker/haystack"]
 	path = .docker/haystack
 	url = https://github.com/paper2code/haystack
+[submodule ".docker/nboost"]
+	path = .docker/nboost
+	url = https://github.com/paper2code/nboost
+[submodule ".docker/gpt2telegram"]
+	path = .docker/gpt2telegram
+	url = https://github.com/paper2code/GPT2-Telegram-Chatbot
+[submodule ".docker/gpt2reddit"]
+	path = .docker/gpt2reddit
+	url = https://github.com/polakowo/gpt2bot
