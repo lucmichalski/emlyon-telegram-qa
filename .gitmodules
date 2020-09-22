@@ -1,0 +1,3 @@
+[submodule ".docker/haystack"]
+	path = .docker/haystack
+	url = https://github.com/paper2code/haystack
