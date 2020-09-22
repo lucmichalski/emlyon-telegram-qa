@@ -41,6 +41,19 @@ services:
     - tika
     command: ["gunicorn", "application:app",  "-b", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "--workers", "2", "--timeout", "180"]    
 
+  deeppavlov:
+    container_name: ${NAMESPACE}-deeppavlov
+    image: lucmichalski/emlyon-qa-deeppavlov:latest
+    build:
+      context: .docker/deeppavlov-chatbot/nlu
+      dockerfile: Dockerfile
+    networks:
+    - internal
+    - web
+    ports:
+    - 5000:5000
+    command: [ "python", "-m", "deeppavlov", "riseapi", "model_config.json", "-p", "5000" ]
+
   server:
     container_name: ${NAMESPACE}-flask
     image: lucmichalski/emlyon-qa-server:flask-latest

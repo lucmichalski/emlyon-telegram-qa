@@ -69,7 +69,7 @@ app = Flask(__name__)
 def query():
     question = request.args.get('question')
     prediction = finder.get_answers(question=question, top_k_retriever=20, top_k_reader=5)
-    result = filter_answers(prediction, details="minimal")
+    result = filter_answers(prediction, details="all")
     app.logger.info('question: %s', question)
     app.logger.info('result: %s', result)
     return jsonify(result)

@@ -10,3 +10,9 @@
 [submodule ".docker/gpt2reddit"]
 	path = .docker/gpt2reddit
 	url = https://github.com/polakowo/gpt2bot
+[submodule ".docker/deeppavlov-chatbot"]
+	path = .docker/deeppavlov-chatbot
+	url = https://github.com/paper2code/deeppavlov-restaurants
+[submodule ".docker/deeppavlov-dream-demos"]
+	path = .docker/deeppavlov-dream-demos
+	url = https://github.com/deepmipt/dp-dream-demos
