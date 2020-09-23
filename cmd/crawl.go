@@ -124,12 +124,15 @@ var CrawlCmd = &cobra.Command{
 				pp.Println("TopImage", article.TopImage)
 				pp.Println("PublishDate", article.PublishDate)
 			}
+			article.CleanedText = strings.Replace(article.CleanedText, "\n", " ", -1)
 
 			// nb. use article Text to extract page content as goose cleaner is working too efficiently sometimes ^^/
 			articleText, err := articletext.GetArticleText(strings.NewReader(rawHTML))
 			if err != nil {
 				log.Fatalf("error while getting article text for url='%s'\n", e.Request.Ctx.Get("url"))
 			}
+			articleText = strings.Replace(articleText, "\n", " ", -1)
+
 			if options.debug {
 				pp.Println("Text", articleText)
 			}

@@ -59,7 +59,7 @@ services:
     image: lucmichalski/emlyon-qa-server:flask-latest
     build:
       context: .docker/haystack-flask
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.gpu
     networks:
     - internal
     - web
