@@ -7,12 +7,12 @@
 [submodule ".docker/gpt2telegram"]
 	path = .docker/gpt2telegram
 	url = https://github.com/paper2code/GPT2-Telegram-Chatbot
-[submodule ".docker/gpt2reddit"]
-	path = .docker/gpt2reddit
-	url = https://github.com/polakowo/gpt2bot
 [submodule ".docker/deeppavlov-chatbot"]
 	path = .docker/deeppavlov-chatbot
 	url = https://github.com/paper2code/deeppavlov-restaurants
 [submodule ".docker/deeppavlov-dream-demos"]
 	path = .docker/deeppavlov-dream-demos
 	url = https://github.com/deepmipt/dp-dream-demos
+[submodule ".docker/gpt2bot"]
+	path = .docker/gpt2bot
+	url = https://github.com/paper2code/gpt2bot
