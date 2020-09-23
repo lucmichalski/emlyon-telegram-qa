@@ -22,3 +22,12 @@
 [submodule ".docker/diagrams2ai"]
 	path = .docker/diagrams2ai
 	url = https://github.com/paper2code/diagrams2ai
+[submodule ".docker/rasa-demo"]
+	path = .docker/rasa-demo
+	url = https://github.com/paper2code/rasa-demo
+[submodule ".docker/rasa-nlu-examples"]
+	path = .docker/rasa-nlu-examples
+	url = https://github.com/RasaHQ/rasa-nlu-examples
+[submodule ".docker/rasa-x-demo"]
+	path = .docker/rasa-x-demo
+	url = https://github.com/RasaHQ/rasa-x-demo
