@@ -41,6 +41,21 @@ services:
     - tika
     command: ["gunicorn", "application:app",  "-b", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "--workers", "2", "--timeout", "180"]    
 
+  gpt2reddit:
+    container_name: ${NAMESPACE}-gpt2reddit
+    image: lucmichalski/emlyon-qa-gpt2reddit:latest
+    build:
+      context: .docker/gpt2reddit
+      dockerfile: Dockerfile.gpu
+    networks:
+    - internal
+    - web
+    volumes:
+    - ./shared/logs:/opt/logs
+    ports:
+    - 5011:5011
+    # command: ["python3", "server.py"]
+
   deeppavlov:
     container_name: ${NAMESPACE}-deeppavlov
     image: lucmichalski/emlyon-qa-deeppavlov:latest

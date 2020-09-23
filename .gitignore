@@ -17,3 +17,5 @@
 *.db
 *.log
 *.log.*
+
+chatbot.cfg
