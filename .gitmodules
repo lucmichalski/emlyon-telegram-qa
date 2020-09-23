@@ -73,3 +73,6 @@
 [submodule ".docker/bothub-engine"]
 	path = .docker/bothub-engine
 	url = https://github.com/paper2code/bothub-engine
+[submodule ".docker/jinai-examples"]
+	path = .docker/jinai-examples
+	url = https://github.com/paper2code/jinai-examples
