@@ -76,3 +76,6 @@
 [submodule ".docker/jinai-examples"]
 	path = .docker/jinai-examples
 	url = https://github.com/paper2code/jinai-examples
+[submodule ".docker/pytorch-cuda"]
+	path = .docker/pytorch-cuda
+	url = https://github.com/anibali/docker-pytorch
