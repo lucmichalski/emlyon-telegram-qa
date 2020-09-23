@@ -16,3 +16,9 @@
 [submodule ".docker/gpt2bot"]
 	path = .docker/gpt2bot
 	url = https://github.com/paper2code/gpt2bot
+[submodule ".docker/rasa"]
+	path = .docker/rasa
+	url = https://github.com/paper2code/rasa
+[submodule ".docker/diagrams2ai"]
+	path = .docker/diagrams2ai
+	url = https://github.com/paper2code/diagrams2ai
