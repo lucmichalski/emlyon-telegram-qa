@@ -40,3 +40,36 @@
 [submodule ".docker/jina-ai-search-stories"]
 	path = .docker/jina-ai-search-stories
 	url = https://github.com/paper2code/jina_hack_2020_search_stories
+[submodule ".docker/rasa-stocky-trading-chatbot"]
+	path = .docker/rasa-stocky-trading-chatbot
+	url = https://github.com/paper2code/stocky-trading-chatbot
+[submodule ".docker/rasa-aya"]
+	path = .docker/rasa-aya
+	url = https://github.com/paper2code/rasa-aya
+[submodule ".docker/rasa-chatbot"]
+	path = .docker/rasa-chatbot
+	url = https://github.com/paper2code/rasa-chatbot
+[submodule ".docker/rasa-flask-mongodb"]
+	path = .docker/rasa-flask-mongodb
+	url = https://github.com/paper2code/rasa_docker_flask_mongodb
+[submodule ".docker/rasa-ai-chatbot"]
+	path = .docker/rasa-ai-chatbot
+	url = https://github.com/paper2code/rasa-ai-chatbot
+[submodule ".docker/bothub"]
+	path = .docker/bothub
+	url = https://github.com/paper2code/bothub
+[submodule ".docker/bothub-nlp-rasa-utils"]
+	path = .docker/bothub-nlp-rasa-utils
+	url = https://github.com/paper2code/bothub-nlp-rasa-utils
+[submodule ".docker/bothub-nlp"]
+	path = .docker/bothub-nlp
+	url = https://github.com/paper2code/bothub-nlp
+[submodule ".docker/bothub-webapp"]
+	path = .docker/bothub-webapp
+	url = https://github.com/paper2code/bothub-webapp
+[submodule ".docker/bothub-nlp-api"]
+	path = .docker/bothub-nlp-api
+	url = https://github.com/paper2code/bothub-nlp-api
+[submodule ".docker/bothub-engine"]
+	path = .docker/bothub-engine
+	url = https://github.com/paper2code/bothub-engine
