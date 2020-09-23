@@ -31,3 +31,12 @@
 [submodule ".docker/rasa-x-demo"]
 	path = .docker/rasa-x-demo
 	url = https://github.com/RasaHQ/rasa-x-demo
+[submodule ".docker/nanomsg-distributed-search"]
+	path = .docker/nanomsg-distributed-search
+	url = https://github.com/paper2code/nanomsg-distributed-search
+[submodule ".docker/golang-nng-surveyor-pattern-demo"]
+	path = .docker/golang-nng-surveyor-pattern-demo
+	url = https://github.com/paper2code/golang-nng-surveyor-pattern-demo
+[submodule ".docker/jina-ai-search-stories"]
+	path = .docker/jina-ai-search-stories
+	url = https://github.com/paper2code/jina_hack_2020_search_stories
