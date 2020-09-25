@@ -1,0 +1,33 @@
+---
+version: '3.8'
+services:
+
+  kbqa: &dp_base
+    build:
+      args:
+        skill_endpoint: answers
+        skillconfig: kbqa/kbqa_cq.json
+        skillhost: 0.0.0.0
+        skillport: 8072
+        skilldir: kbqa/
+      context: ./
+      dockerfile: kbqa/Dockerfile
+    environment:
+    - CUDA_VISIBLE_DEVICES=0
+    volumes:
+    - ./shared/deeppavlov:/root/.deeppavlov
+ 
+  download:
+    <<: *dp_base
+    command: [ "python", "-m", "deeppavlov", "download", "kbqa/kbqa_cq.json" ]
+
+  server:
+    <<: *dp_base
+    environment:
+    - CUDA_VISIBLE_DEVICES=0,1,2
+    ports:
+    - 8072:8072
+    volumes:
+    - ./shared/deeppavlov:/root/.deeppavlov
+    - ./kbqa_cq.json:/dp-agent/kbqa_cq.json
+    command: [ "python", "-m", "deeppavlov", "riseapi", "/dp-agent/kbqa_cq.json", "-p", "8072", "-d" ]
