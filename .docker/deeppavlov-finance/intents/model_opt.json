@@ -1,0 +1,68 @@
+{
+  "embedding_size": 300,
+  "n_classes": 28,
+  "model_name": "cnn_model",
+  "optimizer": "Adam",
+  "loss": "binary_crossentropy",
+  "learning_rate": 0.1,
+  "learning_rate_decay": 0.1,
+  "last_layer_activation": "sigmoid",
+  "restore_lr": false,
+  "classes": [
+    "<UNK>",
+    "inform_food",
+    "inform_area",
+    "inform_pricerange",
+    "bye",
+    "thankyou",
+    "request_phone",
+    "request_addr",
+    "reqalts",
+    "unknown",
+    "inform_this",
+    "request_postcode",
+    "request_pricerange",
+    "affirm",
+    "request_food",
+    "request_area",
+    "negate",
+    "confirm_food",
+    "hello",
+    "confirm_area",
+    "confirm_pricerange",
+    "repeat",
+    "inform_name",
+    "ack",
+    "restart",
+    "deny_name",
+    "deny_food",
+    "reqmore"
+  ],
+  "text_size": null,
+  "padding": "pre",
+  "in": [
+    "x_emb"
+  ],
+  "in_y": [
+    "y_onehot"
+  ],
+  "out": [
+    "y_pred_probas"
+  ],
+  "main": true,
+  "save_path": "intents/model",
+  "load_path": "intents/model",
+  "kernel_sizes_cnn": [
+    3,
+    5,
+    7
+  ],
+  "filters_cnn": 512,
+  "coef_reg_cnn": 0.0001,
+  "coef_reg_den": 0.0001,
+  "dropout_rate": 0.5,
+  "dense_size": 100,
+  "mode": "train",
+  "epochs_done": 0,
+  "final_learning_rate": 0.10000000149011612
+}

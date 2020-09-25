@@ -79,3 +79,33 @@
 [submodule ".docker/pytorch-cuda"]
 	path = .docker/pytorch-cuda
 	url = https://github.com/anibali/docker-pytorch
+[submodule ".docker/rasa-financial-demo"]
+	path = .docker/rasa-financial-demo
+	url = https://github.com/paper2code/rasa-financial-demo
+[submodule ".docker/rasa-helpdesk-assistant"]
+	path = .docker/rasa-helpdesk-assistant
+	url = https://github.com/paper2code/rasa-helpdesk-assistant
+[submodule ".docker/rasa-x"]
+	path = .docker/rasa-x
+	url = https://github.com/paper2code/rasa-x
+[submodule ".docker/rasa-kairon"]
+	path = .docker/rasa-kairon
+	url = https://github.com/paper2code/rasa-kairon
+[submodule ".docker/golang-nng-poc"]
+	path = .docker/golang-nng-poc
+	url = https://github.com/snmed/nanomsg-poc
+[submodule ".docker/rssbriefing-bart-lda"]
+	path = .docker/rssbriefing-bart-lda
+	url = https://github.com/paper2code/rssbriefing-bart-lda
+[submodule ".docker/rasa-docker-local"]
+	path = .docker/rasa-docker-local
+	url = https://github.com/paper2code/rasa-docker-local
+[submodule ".docker/deeppavlov-restaurants"]
+	path = .docker/deeppavlov-restaurants
+	url = https://github.com/paper2code/deeppavlov-restaurants
+[submodule ".docker/deeppavlov-twitter"]
+	path = .docker/deeppavlov-twitter
+	url = https://github.com/Kristopher-Jung/twitterBotChallenge
+[submodule ".docker/botfront"]
+	path = .docker/botfront
+	url = https://github.com/paper2code/botfront
