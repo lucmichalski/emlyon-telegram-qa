@@ -109,3 +109,6 @@
 [submodule ".docker/botfront"]
 	path = .docker/botfront
 	url = https://github.com/paper2code/botfront
+[submodule ".docker/neuralqa"]
+	path = .docker/neuralqa
+	url = https://github.com/paper2code/neuralqa
