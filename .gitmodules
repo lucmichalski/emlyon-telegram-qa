@@ -112,3 +112,12 @@
 [submodule ".docker/neuralqa"]
 	path = .docker/neuralqa
 	url = https://github.com/paper2code/neuralqa
+[submodule ".docker/jina"]
+	path = .docker/jina
+	url = https://github.com/paper2code/jina
+[submodule ".docker/snorkel-tutorials"]
+	path = .docker/snorkel-tutorials
+	url = https://github.com/paper2code/snorkel-tutorials
+[submodule ".docker/snorkel"]
+	path = .docker/snorkel
+	url = https://github.com/paper2code/snorkel
