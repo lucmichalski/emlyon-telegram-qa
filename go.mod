@@ -7,6 +7,7 @@ require (
 	github.com/abadojack/whatlanggo v1.0.1
 	github.com/advancedlogic/GoOse v0.0.0-20200830213114-1225d531e0ad
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef // indirect
+	github.com/dghubble/sling v1.3.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/jaytaylor/html2text v0.0.0-20180606194806-57d518f124b0

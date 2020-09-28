@@ -68,9 +68,27 @@ services:
     - 5000:5000
     command: [ "python", "-m", "deeppavlov", "riseapi", "model_config.json", "-p", "5000" ]
 
-  server:
-    container_name: ${NAMESPACE}-flask
-    image: lucmichalski/emlyon-qa-server:flask-latest
+  # server:
+  #   container_name: ${NAMESPACE}-flask
+  #   image: lucmichalski/emlyon-qa-server:flask-latest
+  #   build:
+  #     context: .docker/haystack-flask
+  #     dockerfile: Dockerfile.gpu
+  #   networks:
+  #   - internal
+  #   - web
+  #   volumes:
+  #   - ./shared/logs:/opt/logs
+  #   ports:
+  #   - 8001:8001
+  #   depends_on:
+  #   - elastic
+  #   - tika
+  #   command: ["--port", "8001", "--host", "0.0.0.0"]
+
+  server: &emlyon_server
+    container_name: ${NAMESPACE}-server
+    image: lucmichalski/emlyon-textqa-chatbot-server:flask-latest
     build:
       context: .docker/haystack-flask
       dockerfile: Dockerfile.gpu
@@ -79,14 +97,26 @@ services:
     - web
     volumes:
     - ./shared/logs:/opt/logs
-    ports:
-    - 8001:8001
+    - em-models:/root/.cache/
     depends_on:
     - elastic
     - tika
-    command: ["--port", "8001", "--host", "0.0.0.0"]
 
-  train:
+  server-en:
+    <<: *emlyon_server    
+    container_name: ${NAMESPACE}-server_en
+    ports:
+    - 8006:8006
+    command: ["--port", "8006", "--host", "0.0.0.0", "--model", "deepset/roberta-base-squad2"]
+
+  server-fr:
+    <<: *emlyon_server    
+    container_name: ${NAMESPACE}-server_fr
+    ports:
+    - 8007:8007
+    command: ["--port", "8007", "--host", "0.0.0.0", "--model", "illuin/camembert-base-fquad"]
+
+  train: &emlyon_train
     container_name: ${NAMESPACE}-train
     build:
       context: .docker/haystack-train
@@ -98,7 +128,16 @@ services:
     depends_on:
     - elastic
     - tika
-    command: ["python3", "train.py", "--index-reset", "--data-dir", "/opt/em-lyon/data/en"]
+
+  train-en:
+    <<: *emlyon_train    
+    container_name: ${NAMESPACE}-train_en-us
+    command: ["--data-dir", "/opt/em-lyon/data/en", "--index-name", "emlyon-en", "--index-reset"]
+
+  train-fr:
+    <<: *emlyon_train    
+    container_name: ${NAMESPACE}-train_en-us
+    command: ["--data-dir", "/opt/em-lyon/data/fr", "--index-name", "emlyon-fr", "--index-reset"]
 
   elastic:
     image: elasticsearch:7.6.2
@@ -138,6 +177,7 @@ networks:
     external: true
 
 volumes:
+  em-models:
   em-data:
     driver_opts:
       type: none

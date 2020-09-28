@@ -12,4 +12,4 @@ RUN apt-get update && \
 
 COPY . .
 
-CMD ["python3", "train.py"]
+ENTRYPOINT ["python3", "train.py"]

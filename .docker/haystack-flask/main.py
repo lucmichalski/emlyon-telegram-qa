@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Sept 11 13:23:10 2020
-@author: paper2code
+@author: luc michalski
 """
 import os
 import json
@@ -10,7 +10,7 @@ import json
 import logging
 from logging.handlers import RotatingFileHandler
 
-import click
+import argparse
 
 import tqdm
 import numpy as np  # linear algebra
@@ -28,7 +28,13 @@ from haystack.utils import print_answers
 from haystack.document_store.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.sparse import ElasticsearchRetriever
 
-document_store = ElasticsearchDocumentStore(host="elastic", username="", password="", index="em-lyon")
+# Script arguments can include path of the config
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument('--model', type=str, default="deepset/roberta-base-squad2")
+arg_parser.add_argument('--host', type=str, default="0.0.0.0")
+arg_parser.add_argument('--port', type=str, default="8000")
+arg_parser.add_argument('--log', type=str, default="../logs/ovh-qa.log")
+args = arg_parser.parse_args()
 
 def filter_answers(results: dict, details: str = "all"):
     answers = results["answers"]
@@ -48,44 +54,45 @@ def filter_answers(results: dict, details: str = "all"):
     else:
         return results
 
-def train_model(input_file='../data/arxiv-metadata-oai.json'):
-    print("training the model...")
-    data  = []
-    with tqdm.tqdm(total=os.path.getsize(input_file)) as pbar:
-        with open(input_file, 'r') as f:
-            for line in f:
-                pbar.update(len(line))
-                data.append(json.loads(line))
-    data = pd.DataFrame(data)
-    document_store.write_documents(data[['title', 'abstract']].rename(columns={'title':'name','abstract':'text'}).to_dict(orient='records'))
-
-retriever = ElasticsearchRetriever(document_store=document_store)
-reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=True, context_window_size=500)
-finder = Finder(reader, retriever)
 
 app = Flask(__name__)
+reader = FARMReader(model_name_or_path=args.model, use_gpu=True, context_window_size=500)
 
 @app.route('/query')
 def query():
-    question = request.args.get('question')
-    prediction = finder.get_answers(question=question, top_k_retriever=20, top_k_reader=5)
+
+    if request.args.get('question'):
+        question = request.args.get('question')
+    else:
+        result = {"status": 400, "msg": "Question cannot be empty"}
+        return jsonify(result)
+
+    if request.args.get('index'):
+        index = request.args.get('index')
+    else:
+        index = "ovh-en-us"
+
+    if request.args.get('top_k_reader'):
+        top_k_reader = request.args.get('top_k_reader')
+    else:
+        top_k_reader = 20
+
+    if request.args.get('top_k_retriever'):
+        top_k_retriever = request.args.get('top_k_retriever')
+    else:
+        top_k_retriever = 2
+
+    document_store = ElasticsearchDocumentStore(host="elastic", username="", password="", index=index)
+    retriever = ElasticsearchRetriever(document_store=document_store)
+    finder = Finder(reader, retriever)
+    prediction = finder.get_answers(question=question, top_k_retriever=int(top_k_retriever), top_k_reader=int(top_k_reader))
     result = filter_answers(prediction, details="all")
     app.logger.info('question: %s', question)
     app.logger.info('result: %s', result)
     return jsonify(result)
 
-@click.command()
-@click.option("--host", default="0.0.0.0", help="Server host.")
-@click.option("--port", default="8001", help="Server port.")
-@click.option("--train", default=False, is_flag=True, help="Train the model.")
-def service(host, port, train):
-    """Run the EMLyon-QA server."""
-    if train:
-        train_model()
-    handler = RotatingFileHandler('../logs/emlyon-qa.log', maxBytes=10000, backupCount=1)
+if __name__ == '__main__':
+    handler = RotatingFileHandler(args.log, maxBytes=10000, backupCount=1)
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
-    app.run(host=host, port=port)
-
-if __name__ == '__main__':
-    service()
+    app.run(host=args.host, port=args.port)

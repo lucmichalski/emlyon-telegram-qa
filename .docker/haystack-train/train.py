@@ -62,7 +62,6 @@ def train_model(data_dir, es_host, es_port, index_name, index_reset, es_username
                             "meta-lang": json_formatted_article["lang"],
                             "language": json_formatted_article["detected-lang"]}
 
-
                 # Add document to bulk
                 dicts.append(document)
 
@@ -82,12 +81,12 @@ def train_model(data_dir, es_host, es_port, index_name, index_reset, es_username
     print('finished')
 
 @click.command()
-@click.option("--data-dir", default="/opt/em-lyon/data", help="Data directory.")
+@click.option("--data-dir", default="/opt/em-lyon/data/en", help="Data directory.")
 @click.option("--host", default="elastic", help="Elastic host.")
 @click.option("--port", default="9200", help="Elastic port.")
 @click.option("--username", default="",  help="Elastic username.")
 @click.option("--password", default="",  help="Elastic password.")
-@click.option("--index-name", default="em-lyon",  help="Elastic index name.")
+@click.option("--index-name", default="emlyon-en",  help="Elastic index name (nb. must be lowercase).")
 @click.option("--index-reset", default=False, is_flag=True, help="Elastic index truncate.")
 def service(data_dir, host, port, index_name, index_reset, username, password):
     train_model(data_dir, host, port, index_name, index_reset, username, password)
