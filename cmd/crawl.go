@@ -157,6 +157,7 @@ var CrawlCmd = &cobra.Command{
 				TopImage:           article.TopImage,
 				Language:           info.Lang.String(),
 				LanguageConfidence: info.Confidence,
+				Fingerprint:        getMD5Hash(article.CleanedText),
 			}
 
 			if article.PublishDate != nil {
@@ -205,7 +206,7 @@ var CrawlCmd = &cobra.Command{
 }
 
 func init() {
-	CrawlCmd.Flags().StringSliceVarP(&languages, "languages", "l", []string{"en"}, fmt.Sprintf("Language to crawl (valid: %s)", strings.Join(validLanguages, ",")))
+	CrawlCmd.Flags().StringSliceVarP(&languages, "languages", "l", []string{"en", "fr"}, fmt.Sprintf("Language to crawl (valid: %s)", strings.Join(validLanguages, ",")))
 	CrawlCmd.Flags().BoolVarP(&dataReset, "data-reset", "", false, "Reset collected data (json files)")
 	CrawlCmd.Flags().StringVarP(&dataDir, "data-dir", "", "./shared/data/emlyon", "Data directory.")
 	CrawlCmd.Flags().StringVarP(&cacheDir, "cache-dir", "", "./shared/cache/emlyon", "Cache output path.")

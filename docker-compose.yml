@@ -136,8 +136,35 @@ services:
 
   train-fr:
     <<: *emlyon_train    
-    container_name: ${NAMESPACE}-train_en-us
+    container_name: ${NAMESPACE}-train_fr-fr
     command: ["--data-dir", "/opt/em-lyon/data/fr", "--index-name", "emlyon-fr", "--index-reset"]
+
+  mcq-generator:
+    image: lucmichalski/mcq-generator:latest
+    container_name: ${NAMESPACE}-mcq
+    build:
+      context: .docker/mcq-generator
+      dockerfile: Dockerfile.gpu
+    ports:
+    - 5100:5100
+    networks:
+    - internal
+    - web
+    volumes:
+    - ./.docker/mcq-generator:/app
+    # - nltk-data:/root/nltk_data
+    command: ["python3", "/app/Flask_api.py"]
+
+  es-write:
+    image: lucmichalski/es-write:latest
+    container_name: ${NAMESPACE}-eswrite
+    build:
+      context: .docker/es-write
+      dockerfile: Dockerfile
+    networks:
+    - internal
+    depends_on:
+    - elastic
 
   elastic:
     image: elasticsearch:7.6.2
@@ -186,6 +213,7 @@ volumes:
   em-cache:
   db-data:
   es-data:
+  nltk-data:
   tika-data:
 
 

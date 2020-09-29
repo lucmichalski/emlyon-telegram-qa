@@ -22,6 +22,7 @@ type Page struct {
 	TopImage           string    `json:"image"`
 	PublishDate        time.Time `json:"publish-date"`
 	Language           string    `json:"detected-lang"`
+	Fingerprint        string    `json:"fingerprint"`
 	LanguageConfidence float64   `json:"-"`
 }
 

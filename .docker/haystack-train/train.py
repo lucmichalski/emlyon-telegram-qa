@@ -60,7 +60,8 @@ def train_model(data_dir, es_host, es_port, index_name, index_reset, es_username
                             "meta-description": json_formatted_article["description"],
                             "meta-keywords": json_formatted_article["keywords"],
                             "meta-lang": json_formatted_article["lang"],
-                            "language": json_formatted_article["detected-lang"]}
+                            "language": json_formatted_article["detected-lang"],
+			    "fingerprint": json_formatted_article["fingerprint"]}
 
                 # Add document to bulk
                 dicts.append(document)

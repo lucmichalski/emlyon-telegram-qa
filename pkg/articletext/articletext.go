@@ -17,8 +17,7 @@ import (
 )
 
 // liist of tags to ignore, as they dones't contain useful data
-var skiphtmltags []string = []string{"script", "style", "noscript", "head",
-	"header", "footer", "nav"}
+var skiphtmltags []string = []string{"script", "style", "noscript", "head", "header", "footer", "nav", "a", "img"}
 
 func init() {
 	// to make lookup faster

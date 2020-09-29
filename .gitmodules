@@ -121,3 +121,6 @@
 [submodule ".docker/snorkel"]
 	path = .docker/snorkel
 	url = https://github.com/paper2code/snorkel
+[submodule ".docker/mcq-generator"]
+	path = .docker/mcq-generator
+	url = https://github.com/lucmichalski/MCQ_Generator
