@@ -148,7 +148,7 @@ var ChatbotCmd = &cobra.Command{
 func init() {
 	// https://t.me/octaveqa_bot
 	ChatbotCmd.Flags().StringVarP(&qaServerEndpoint, "qa-endoint", "", "/query", "Hasytack QA endpoint path.")
-	ChatbotCmd.Flags().IntVarP(&qaTopKRetriever, "top-k-retriever", "", 30, "Hasytack QA top-k-retriever value")
+	ChatbotCmd.Flags().IntVarP(&qaTopKRetriever, "top-k-retriever", "", 20, "Hasytack QA top-k-retriever value")
 	ChatbotCmd.Flags().IntVarP(&qaTopKReader, "top-k-reader", "", 2, "Hasytack QA top-k-reader value")
 	ChatbotCmd.Flags().StringVarP(&tgToken, "token-api", "", os.Getenv("EMLYON_TELEGRAM_TOKEN"), "Telegram token api")
 	ChatbotCmd.Flags().IntVarP(&tgTimeout, "timeout", "", 60, "Reset http cache")
